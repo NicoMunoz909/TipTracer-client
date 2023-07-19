@@ -1,0 +1,46 @@
+.formModal-container {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.formModal-form {
+  width: 80%;
+  height: fit-content;
+  padding: 50px 0px;
+  background-color: white;
+  border-radius: 25px;
+  border: 1px solid black;
+}
+
+.formModal-form h2 {
+  text-align: center;
+}
+
+.formModal-form label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin: auto;
+  width: 70%;
+}
+
+.formModal-form__propinas {
+  display: flex;
+  width: 70%;
+  margin: auto;
+}
+
+.formModal-form__buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  margin: auto;
+}

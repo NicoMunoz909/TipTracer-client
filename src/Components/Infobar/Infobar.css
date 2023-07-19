@@ -1,0 +1,6 @@
+.infobar-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 24px;
+}

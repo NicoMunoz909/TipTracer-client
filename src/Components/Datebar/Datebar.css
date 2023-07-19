@@ -1,0 +1,26 @@
+.datebar-container {
+  margin-top: 140px;
+  padding: 10px;
+}
+
+.datebar__date {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+
+.datebar__date div {
+  display: flex;
+  align-items: center;
+}
+
+.datebar__date input {
+  position: absolute;
+  top: 16px;
+  right: 0px;
+  opacity: 0;
+}
+
+.datebar__date svg {
+  font-size: 24px;
+}

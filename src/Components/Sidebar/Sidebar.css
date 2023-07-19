@@ -1,0 +1,35 @@
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.301);
+  z-index: 2;
+  overflow: hidden;
+  transition: all ease 200ms;
+}
+
+.sidebar-container svg {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px;
+  font-size: 50px;
+  border: 1px solid;
+  border-radius: 50px;
+  background-color: white;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+  height: 100%;
+  background-color: white;
+}
+
+.sidebar-content a {
+  margin: 20px;
+}
