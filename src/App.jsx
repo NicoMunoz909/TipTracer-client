@@ -65,8 +65,8 @@ function App({ mode }) {
 
   const fetchUrl =
     mode === "Daily"
-      ? `https://nmz.world/tips/?fecha=${formatDate(date)}`
-      : `https://nmz.world/tips/?fechaDesde=${formatDate(
+      ? `https://tiptracer.onrender.com/?fecha=${formatDate(date)}`
+      : `https://tiptracer.onrender.com/?fechaDesde=${formatDate(
           getWeekRange(date).firstDay
         )}&fechaHasta=${formatDate(getWeekRange(date).lastDay)}`;
 
@@ -85,7 +85,7 @@ function App({ mode }) {
       tipoPropina: e.target[3].value,
       fecha: e.target[4].value,
     };
-    fetch(`https://nmz.world/tips/`, {
+    fetch(`https://tiptracer.onrender.com/`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -104,7 +104,7 @@ function App({ mode }) {
       tipoPropina: e.target[3].value,
       fecha: e.target[4].value,
     };
-    fetch(`https://nmz.world/tips/${selectedTable.id}`, {
+    fetch(`https://tiptracer.onrender.com/${selectedTable.id}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -115,7 +115,7 @@ function App({ mode }) {
   };
 
   const handleDelete = () => {
-    fetch(`https://nmz.world/tips/${selectedTable.id}`, {
+    fetch(`https://tiptracer.onrender.com/${selectedTable.id}`, {
       method: "DELETE",
     });
     setIsFormOpen(false);
