@@ -83,7 +83,7 @@ function App() {
       tipoPropina: e.target[3].value,
       fecha: e.target[4].value,
     };
-    fetch(`https://nmz.world/tips`, {
+    fetch(`https://nmz.world/tips/`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -102,7 +102,7 @@ function App() {
       tipoPropina: e.target[3].value,
       fecha: e.target[4].value,
     };
-    fetch(`https://nmz.world/tips:${selectedTable.id}`, {
+    fetch(`https://nmz.world/tips/${selectedTable.id}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -113,7 +113,7 @@ function App() {
   };
 
   const handleDelete = () => {
-    fetch(`https://nmz.world/tips:${selectedTable.id}`, {
+    fetch(`https://nmz.world/tips/${selectedTable.id}`, {
       method: "DELETE",
     });
     setIsFormOpen(false);
