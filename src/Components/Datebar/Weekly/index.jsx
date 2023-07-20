@@ -2,7 +2,12 @@ import { TiArrowSync } from "react-icons/ti";
 
 const Weekly = ({ date, onChange }) => {
   function getWeekRange(date) {
-    const firstDayOfWeek = date.getDate() - date.getDay() + 1; // Calculate the first day of the week
+    let firstDayOfWeek = date.getDate() - date.getDay();
+    if (date.getDay() === 0) {
+      firstDayOfWeek -= 6;
+    } else {
+      firstDayOfWeek += 1;
+    } // Calculate the first day of the week
     const lastDayOfWeek = firstDayOfWeek + 6; // Add six days to get the last day of the week
 
     const firstDay = new Date(

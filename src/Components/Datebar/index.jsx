@@ -3,10 +3,11 @@ import Daily from "./Daily";
 import Weekly from "./Weekly";
 import "./Datebar.css";
 
-const Datebar = ({ onChange, date }) => {
+const Datebar = ({ date, onChange, mode }) => {
   return (
     <div className="datebar-container">
-      <Weekly onChange={onChange} date={date} />
+      {mode === "Daily" && <Daily onChange={onChange} date={date} />}
+      {mode === "Weekly" && <Weekly onChange={onChange} date={date} />}
     </div>
   );
 };

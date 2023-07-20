@@ -1,34 +1,18 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Header from "./Components/Header";
-import Datebar from "./Components/Datebar";
 import Infobar from "./Components/Infobar";
 import Table from "./Components/Table";
 import Sidebar from "./Components/Sidebar";
 import FormModal from "./Components/FormModal";
+import Datebar from "./Components/Datebar";
 
-function App() {
+function App({ mode }) {
   const [date, setDate] = useState(new Date());
   const [tables, setTables] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState(undefined);
   const [formFlag, setFormFlag] = useState(undefined);
-
-  useEffect(() => {
-    fetch(
-      `https://nmz.world/tips/?fechaDesde=${formatDate(
-        getWeekRange(date).firstDay
-      )}&fechaHasta=${formatDate(getWeekRange(date).lastDay)}`
-    )
-      .then((res) => res.json())
-      .then((data) => setTables(data));
-  }, [date, isFormOpen]);
-
-  // useEffect(() => {
-  //   fetch(`https://nmz.world/tips?fecha=${formatDate(date)}`)
-  //     .then((res) => res.json())
-  //     .then((data) => setTables(data));
-  // }, [date, isFormOpen]);
 
   const amounts = tables.reduce(
     (totals, table) => {
@@ -54,7 +38,12 @@ function App() {
   };
 
   function getWeekRange(date) {
-    const firstDayOfWeek = date.getDate() - date.getDay() + 1; // Calculate the first day of the week
+    let firstDayOfWeek = date.getDate() - date.getDay();
+    if (date.getDay() === 0) {
+      firstDayOfWeek -= 6;
+    } else {
+      firstDayOfWeek += 1;
+    } // Calculate the first day of the week
     const lastDayOfWeek = firstDayOfWeek + 6; // Add six days to get the last day of the week
 
     const firstDay = new Date(
@@ -73,6 +62,19 @@ function App() {
       lastDay,
     };
   }
+
+  const fetchUrl =
+    mode === "Daily"
+      ? `https://nmz.world/tips/?fecha=${formatDate(date)}`
+      : `https://nmz.world/tips/?fechaDesde=${formatDate(
+          getWeekRange(date).firstDay
+        )}&fechaHasta=${formatDate(getWeekRange(date).lastDay)}`;
+
+  useEffect(() => {
+    fetch(fetchUrl)
+      .then((res) => res.json())
+      .then((data) => setTables(data));
+  }, [date, isFormOpen, fetchUrl]);
 
   const handleCreate = (e) => {
     e.preventDefault();
@@ -151,7 +153,7 @@ function App() {
         />
       )}
       <Header openForm={createTable}></Header>
-      <Datebar date={date} onChange={setDate}></Datebar>
+      <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
       <Infobar amounts={amounts}></Infobar>
       {tables.length === 0 && (
         <h2 style={{ textAlign: "center", height: "0px", margin: "0px" }}>

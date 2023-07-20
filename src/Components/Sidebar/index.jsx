@@ -12,10 +12,8 @@ const Sidebar = () => {
     <div id="sidebar" className="sidebar-container">
       <RxCross1 onClick={hideSidebar}></RxCross1>
       <div className="sidebar-content">
-        <Link to={"/dia"}>Dia</Link>
+        <Link to={"/diario"}>Diario</Link>
         <Link to={"/semanal"}>Semanal</Link>
-        <Link to={"/mensual"}>Mensual</Link>
-        <Link to={"/personalizado"}>Personalizado</Link>
       </div>
     </div>
   );
