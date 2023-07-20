@@ -16,7 +16,7 @@ function App() {
 
   useEffect(() => {
     fetch(
-      `https://nmz.world/tips?fechaDesde=${formatDate(
+      `https://nmz.world/tips/?fechaDesde=${formatDate(
         getWeekRange(date).firstDay
       )}&fechaHasta=${formatDate(getWeekRange(date).lastDay)}`
     )
