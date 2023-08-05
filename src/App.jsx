@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./App.css";
+import { DateContext } from "./Contexts/DateContext";
 import Header from "./Components/Header";
 import Infobar from "./Components/Infobar";
 import Table from "./Components/Table";
-import Sidebar from "./Components/Sidebar";
 import FormModal from "./Components/FormModal";
 import Datebar from "./Components/Datebar";
+import Loader from "./Components/Loader";
 
-function App({ mode }) {
+function App() {
   const [date, setDate] = useState(new Date());
   const [tables, setTables] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState(undefined);
   const [formFlag, setFormFlag] = useState(undefined);
+  const [mode, setMode] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const amounts = tables.reduce(
     (totals, table) => {
@@ -46,16 +49,8 @@ function App({ mode }) {
     } // Calculate the first day of the week
     const lastDayOfWeek = firstDayOfWeek + 6; // Add six days to get the last day of the week
 
-    const firstDay = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      firstDayOfWeek
-    );
-    const lastDay = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      lastDayOfWeek
-    );
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), firstDayOfWeek);
+    const lastDay = new Date(date.getFullYear(), date.getMonth(), lastDayOfWeek);
 
     return {
       firstDay,
@@ -64,17 +59,25 @@ function App({ mode }) {
   }
 
   const fetchUrl =
-    mode === "Daily"
+    mode === 0
       ? `https://tiptracer.onrender.com/?fecha=${formatDate(date)}`
       : `https://tiptracer.onrender.com/?fechaDesde=${formatDate(
           getWeekRange(date).firstDay
         )}&fechaHasta=${formatDate(getWeekRange(date).lastDay)}`;
 
-  useEffect(() => {
-    fetch(fetchUrl)
-      .then((res) => res.json())
-      .then((data) => setTables(data));
-  }, [date, isFormOpen, fetchUrl]);
+  const fetchTables = () => {
+    {
+      setIsLoading(true);
+      fetch(fetchUrl)
+        .then((res) => res.json())
+        .then((data) => {
+          setTables(data);
+          setIsLoading(false);
+        });
+    }
+  };
+
+  useEffect(fetchTables, [date, fetchUrl, mode]);
 
   const handleCreate = (e) => {
     e.preventDefault();
@@ -91,8 +94,9 @@ function App({ mode }) {
       },
       method: "POST",
       body: JSON.stringify(formBody),
-    });
-    setIsFormOpen(false);
+    })
+      .then(() => setIsFormOpen(false))
+      .finally(() => fetchTables());
   };
 
   const handleEdit = (e) => {
@@ -110,20 +114,23 @@ function App({ mode }) {
       },
       method: "PATCH",
       body: JSON.stringify(formBody),
-    });
-    setIsFormOpen(false);
+    })
+      .then(() => setIsFormOpen(false))
+      .finally(() => fetchTables());
   };
 
   const handleDelete = () => {
     fetch(`https://tiptracer.onrender.com/${selectedTable.id}`, {
       method: "DELETE",
-    });
-    setIsFormOpen(false);
+    })
+      .then(() => setIsFormOpen(false))
+      .finally(() => fetchTables());
   };
 
   const createTable = () => {
     setFormFlag("Create");
     setIsFormOpen(true);
+    fetchTables();
   };
 
   const editTable = (table) => {
@@ -139,40 +146,43 @@ function App({ mode }) {
   };
 
   return (
-    <div>
-      <Sidebar></Sidebar>
-      {isFormOpen && (
-        <FormModal
-          formatDate={formatDate}
-          onCreate={handleCreate}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onCancel={() => setIsFormOpen(false)}
-          tableInfo={selectedTable}
-          formFlag={formFlag}
-        />
-      )}
-      <Header openForm={createTable}></Header>
-      <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
-      <Infobar amounts={amounts}></Infobar>
-      {tables.length === 0 && (
-        <h2 style={{ textAlign: "center", height: "0px", margin: "0px" }}>
-          No hay mesas que pobreza
-        </h2>
-      )}
-      <div className="tablesContainer">
-        {tables.map((table) => {
-          return (
-            <Table
-              key={table.id}
-              item={table}
-              onEdit={() => editTable(table)}
-              onDelete={() => deleteTable(table)}
-            />
-          );
-        })}
+    <DateContext.Provider value={date}>
+      <div>
+        {isFormOpen && (
+          <FormModal
+            formatDate={formatDate}
+            onCreate={handleCreate}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onCancel={() => setIsFormOpen(false)}
+            tableInfo={selectedTable}
+            formFlag={formFlag}
+          />
+        )}
+        <Header openForm={createTable} changeMode={setMode} isLoading={isLoading}></Header>
+        <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
+        <Infobar amounts={amounts}></Infobar>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <div className="tablesContainer">
+            {tables.length === 0 && (
+              <h2 style={{ textAlign: "center", height: "0px", margin: "0px" }}>No hay mesas que pobreza</h2>
+            )}
+            {tables.map((table) => {
+              return (
+                <Table
+                  key={table.id}
+                  item={table}
+                  onEdit={() => editTable(table)}
+                  onDelete={() => deleteTable(table)}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
+    </DateContext.Provider>
   );
 }
 

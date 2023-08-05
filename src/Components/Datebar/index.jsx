@@ -6,8 +6,8 @@ import "./Datebar.css";
 const Datebar = ({ date, onChange, mode }) => {
   return (
     <div className="datebar-container">
-      {mode === "Daily" && <Daily onChange={onChange} date={date} />}
-      {mode === "Weekly" && <Weekly onChange={onChange} date={date} />}
+      {mode === 0 && <Daily onChange={onChange} date={date} />}
+      {mode === 1 && <Weekly onChange={onChange} date={date} />}
     </div>
   );
 };

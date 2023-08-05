@@ -35,6 +35,8 @@ body {
   height: 100vh;
   min-width: 320px;
   min-height: 100vh;
+  background-color: rgb(250, 248, 237);
+  color: #5e5c56;
 }
 
 h1 {

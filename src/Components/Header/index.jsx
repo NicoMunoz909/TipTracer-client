@@ -1,26 +1,34 @@
 import React from "react";
 import "./Header.css";
-import { GiHamburgerMenu } from "react-icons/gi";
-import logo from "../../Assets/logo.png";
-import Clock from "./Clock";
+import { FaPlus } from "react-icons/fa";
 
-function Header({ openForm }) {
-  const showSidebar = () => {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.style.width = "100vw";
-  };
-
+function Header({ openForm, changeMode, isLoading }) {
   return (
     <div className="header-container">
       <div className="header__menu">
-        <GiHamburgerMenu onClick={showSidebar} />
-      </div>
-      <div className="header__icon">
-        <button onClick={() => openForm(true)}>
-          <img src={logo} alt="" />
+        <button onClick={() => openForm(true)} disabled={isLoading}>
+          <FaPlus /> Nueva Mesa
         </button>
       </div>
-      <Clock />
+      <div className="header__icon">
+        <p style={{ textTransform: "capitalize" }}>
+          {new Date().toLocaleDateString("es-MX", {
+            weekday: "short",
+            day: "2-digit",
+            month: "2-digit",
+          })}
+        </p>
+        <label htmlFor="mode">Modo:</label>
+        <select
+          name="mode"
+          id="mode"
+          onChange={(e) => changeMode(parseInt(e.target.value))}
+          disabled={isLoading}
+        >
+          <option value={0}>Diario</option>
+          <option value={1}>Semanal</option>
+        </select>
+      </div>
     </div>
   );
 }

@@ -1,11 +1,13 @@
 import { TiArrowSync } from "react-icons/ti";
+import { DateContext } from "../../../Contexts/DateContext";
+import { useContext } from "react";
 
-const Daily = ({ date, onChange }) => {
+const Daily = ({ onChange }) => {
+  const date = useContext(DateContext);
+
   return (
     <div className="datebar__date">
-      <p style={{ textTransform: "capitalize" }}>
-        {date.toLocaleString("es-MX", { weekday: "long" })}
-      </p>
+      <p style={{ textTransform: "capitalize" }}>{date.toLocaleString("es-MX", { weekday: "long" })}</p>
       <div>
         <p>
           {date.toLocaleString("es-MX", {

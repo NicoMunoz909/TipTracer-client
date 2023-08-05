@@ -1,0 +1,19 @@
+.loader {
+  font-size: 80px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.loader svg {
+  transform: rotate(0);
+  animation: loader 700ms linear 0s infinite normal none;
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
