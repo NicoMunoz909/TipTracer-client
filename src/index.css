@@ -35,8 +35,8 @@ body {
   height: 100vh;
   min-width: 320px;
   min-height: 100vh;
-  background-color: rgb(250, 248, 237);
-  color: #5e5c56;
+  background-color: #73726e;
+  color: #e4f1e5;
 }
 
 h1 {
@@ -51,9 +51,11 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  color: #52524f;
+  background-color: #c5cbc4;
+  border: none;
 }
 button:hover {
   border-color: #646cff;

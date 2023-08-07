@@ -1,4 +1,6 @@
 import React from "react";
+import ConfirmButton from "../ConfirmButton";
+import CancelButton from "../CancelButton";
 
 const EditForm = ({ formatDate, onSubmit, onCancel, table }) => {
   return (
@@ -7,39 +9,20 @@ const EditForm = ({ formatDate, onSubmit, onCancel, table }) => {
       <form action="" onSubmit={onSubmit}>
         <label htmlFor="nombre">
           Nombre
-          <input
-            type="text"
-            name="nombre"
-            id="nombre"
-            defaultValue={table.nombre}
-          />
+          <input type="text" name="nombre" id="nombre" defaultValue={table.nombre} />
         </label>
         <label htmlFor="total">
           Total
-          <input
-            type="number"
-            name="total"
-            id="total"
-            defaultValue={table.total}
-          />
+          <input type="number" name="total" id="total" defaultValue={table.total} />
         </label>
         <div className="formModal-form__propinas">
           <label htmlFor="propina">
             Propina
-            <input
-              type="number"
-              name="propina"
-              id="propina"
-              defaultValue={table.propina}
-            />
+            <input type="number" name="propina" id="propina" defaultValue={table.propina} />
           </label>
           <label htmlFor="tipoPropina">
             Tipo
-            <select
-              name="tipoPropina"
-              id="tipoPropina"
-              defaultValue={table.tipoPropina}
-            >
+            <select name="tipoPropina" id="tipoPropina" defaultValue={table.tipoPropina}>
               <option value="Tarjeta">T</option>
               <option value="Efectivo">FT</option>
             </select>
@@ -47,18 +30,11 @@ const EditForm = ({ formatDate, onSubmit, onCancel, table }) => {
         </div>
         <label htmlFor="fecha">
           Fecha
-          <input
-            type="date"
-            name="fecha"
-            id="fecha"
-            defaultValue={table.fecha}
-          />
+          <input type="date" name="fecha" id="fecha" defaultValue={table.fecha} />
         </label>
         <div className="formModal-form__buttons">
-          <button type="submit">Modificar</button>
-          <button type="reset" onClick={onCancel}>
-            Cancelar
-          </button>
+          <ConfirmButton type="submit" />
+          <CancelButton type="reset" onClick={onCancel} />
         </div>
       </form>
     </div>

@@ -15,9 +15,9 @@
   height: fit-content;
   margin-top: 60px;
   padding: 10px 0px;
-  background-color: white;
   border-radius: 25px;
-  border: 1px solid black;
+  background-color: #73726e;
+  color: inherit;
 }
 
 .formModal-form h2 {
@@ -32,6 +32,13 @@
   width: 70%;
 }
 
+.formModal-form input,
+select {
+  border-radius: 5px;
+  border: none;
+  margin: 3px;
+}
+
 .formModal-form__propinas {
   display: flex;
   width: 70%;
@@ -43,4 +50,17 @@
   justify-content: space-between;
   width: 70%;
   margin: auto;
+  margin-top: 20px;
+}
+
+.formModal-form__confirm {
+  background-color: green;
+  color: white;
+  font-size: 20px;
+}
+
+.formModal-form__cancel {
+  background-color: red;
+  color: white;
+  font-size: 20px;
 }

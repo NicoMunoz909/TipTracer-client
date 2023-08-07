@@ -1,4 +1,6 @@
 import React from "react";
+import ConfirmButton from "../ConfirmButton";
+import CancelButton from "../CancelButton";
 
 const CreateForm = ({ formatDate, onSubmit, onCancel }) => {
   return (
@@ -7,16 +9,16 @@ const CreateForm = ({ formatDate, onSubmit, onCancel }) => {
       <form action="" onSubmit={onSubmit}>
         <label htmlFor="nombre">
           Nombre
-          <input type="text" name="nombre" id="nombre" />
+          <input type="text" name="nombre" id="nombre" required />
         </label>
         <label htmlFor="total">
           Total
-          <input type="number" name="total" id="total" />
+          <input type="number" name="total" id="total" required />
         </label>
         <div className="formModal-form__propinas">
           <label htmlFor="propina">
             Propina
-            <input type="number" name="propina" id="propina" />
+            <input type="number" name="propina" id="propina" required />
           </label>
           <label htmlFor="tipoPropina">
             Tipo
@@ -28,18 +30,11 @@ const CreateForm = ({ formatDate, onSubmit, onCancel }) => {
         </div>
         <label htmlFor="fecha">
           Fecha
-          <input
-            type="date"
-            name="fecha"
-            id="fecha"
-            defaultValue={formatDate(new Date())}
-          />
+          <input type="date" name="fecha" id="fecha" defaultValue={formatDate(new Date())} />
         </label>
         <div className="formModal-form__buttons">
-          <button type="submit">Crear</button>
-          <button type="reset" onClick={onCancel}>
-            Cancelar
-          </button>
+          <ConfirmButton type="submit" />
+          <CancelButton type="reset" onClick={onCancel} />
         </div>
       </form>
     </div>

@@ -9,11 +9,6 @@
   width: 100px;
 }
 
-.header__menu button {
-  width: 200px;
-  border: 1px solid #ddd;
-}
-
 .header__icon {
   width: fit-content !important;
 }

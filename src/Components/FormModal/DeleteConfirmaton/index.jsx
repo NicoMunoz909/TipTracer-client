@@ -1,12 +1,14 @@
 import React from "react";
+import ConfirmButton from "../ConfirmButton";
+import CancelButton from "../CancelButton";
 
 const DeleteConfirmation = ({ onConfirm, onCancel }) => {
   return (
     <div className="formModal-form">
       <h2>¿Borrar mesa?</h2>
       <div className="formModal-form__buttons">
-        <button onClick={onConfirm}>Borrar</button>
-        <button onClick={onCancel}>Cancelar</button>
+        <ConfirmButton onClick={onConfirm} />
+        <CancelButton onClick={onCancel} />
       </div>
     </div>
   );
