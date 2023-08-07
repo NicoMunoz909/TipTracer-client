@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { DateContext } from "./Contexts/DateContext";
 import Header from "./Components/Header";
@@ -7,6 +7,7 @@ import Table from "./Components/Table";
 import FormModal from "./Components/FormModal";
 import Datebar from "./Components/Datebar";
 import Loader from "./Components/Loader";
+import Alert from "./Components/Alert";
 
 function App() {
   const [date, setDate] = useState(new Date());
@@ -16,19 +17,7 @@ function App() {
   const [formFlag, setFormFlag] = useState(undefined);
   const [mode, setMode] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  const amounts = tables.reduce(
-    (totals, table) => {
-      totals.total += table.total;
-      if (table.tipoPropina === "Tarjeta") {
-        totals.cardTips += table.propina;
-      } else {
-        totals.cashTips += table.propina;
-      }
-      return totals;
-    },
-    { total: 0, cardTips: 0, cashTips: 0 }
-  );
+  const URL = "https://tiptracer.onrender.com/";
 
   const formatDate = (date) => {
     return (
@@ -58,26 +47,46 @@ function App() {
     };
   }
 
-  const fetchUrl =
-    mode === 0
-      ? `https://tiptracer.onrender.com/?fecha=${formatDate(date)}`
-      : `https://tiptracer.onrender.com/?fechaDesde=${formatDate(
-          getWeekRange(date).firstDay
-        )}&fechaHasta=${formatDate(getWeekRange(date).lastDay)}`;
+  const amounts = tables.reduce(
+    (totals, table) => {
+      totals.total += table.total;
+      if (table.tipoPropina === "Tarjeta") {
+        totals.cardTips += table.propina;
+      } else {
+        totals.cashTips += table.propina;
+      }
+      return totals;
+    },
+    { total: 0, cardTips: 0, cashTips: 0 }
+  );
 
-  const fetchTables = () => {
+  const UrlQuery = useMemo(() => {
+    const query =
+      mode === 0
+        ? `?fecha=${formatDate(date)}`
+        : `?desde=${formatDate(getWeekRange(date).firstDay)}&hasta=${formatDate(getWeekRange(date).lastDay)}`;
+    return query;
+  }, [date, mode]);
+
+  function fetchTables(query) {
     {
       setIsLoading(true);
-      fetch(fetchUrl)
+      fetch(URL + query)
         .then((res) => res.json())
         .then((data) => {
           setTables(data);
           setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          showAlert(err, "red");
         });
     }
-  };
+  }
 
-  useEffect(fetchTables, [date, fetchUrl, mode]);
+  useEffect(() => {
+    fetchTables(UrlQuery);
+  }, [date, UrlQuery, mode]);
 
   const handleCreate = (e) => {
     e.preventDefault();
@@ -88,15 +97,26 @@ function App() {
       tipoPropina: e.target[3].value,
       fecha: e.target[4].value,
     };
-    fetch(`https://tiptracer.onrender.com/`, {
+    fetch(URL, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify(formBody),
     })
-      .then(() => setIsFormOpen(false))
-      .finally(() => fetchTables());
+      .then((res) => res.json())
+      .then((data) => {
+        showAlert(data.msg, "green");
+        setIsFormOpen(false);
+        setTables([
+          ...tables,
+          { ...data.mesa, total: parseInt(data.mesa.total), propina: parseInt(data.mesa.propina) },
+        ]);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        showAlert(err);
+      });
   };
 
   const handleEdit = (e) => {
@@ -108,29 +128,58 @@ function App() {
       tipoPropina: e.target[3].value,
       fecha: e.target[4].value,
     };
-    fetch(`https://tiptracer.onrender.com/${selectedTable.id}`, {
+    fetch(URL + selectedTable.id, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "PATCH",
       body: JSON.stringify(formBody),
     })
-      .then(() => setIsFormOpen(false))
-      .finally(() => fetchTables());
+      .then((res) => res.json())
+      .then((data) => {
+        showAlert(data.msg, "green");
+        setIsFormOpen(false);
+        console.log({ id: data.id, ...formBody });
+        setTables(
+          tables.map((t) => {
+            if (t.id == data.id) {
+              return {
+                id: t.id,
+                ...formBody,
+                total: parseFloat(formBody.total),
+                propina: parseFloat(formBody.propina),
+              };
+            } else {
+              return t;
+            }
+          })
+        );
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        showAlert(err, "red");
+      });
   };
 
   const handleDelete = () => {
-    fetch(`https://tiptracer.onrender.com/${selectedTable.id}`, {
+    fetch(URL + selectedTable.id, {
       method: "DELETE",
     })
-      .then(() => setIsFormOpen(false))
-      .finally(() => fetchTables());
+      .then((res) => res.json())
+      .then((data) => {
+        showAlert(data.msg, "green");
+        setIsFormOpen(false);
+        setTables(tables.filter((t) => t.id != data.id));
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        showAlert(err, "red");
+      });
   };
 
   const createTable = () => {
     setFormFlag("Create");
     setIsFormOpen(true);
-    fetchTables();
   };
 
   const editTable = (table) => {
@@ -145,43 +194,57 @@ function App() {
     setIsFormOpen(true);
   };
 
+  const hideAlert = () => {
+    const alert = document.getElementById("alert");
+    alert.style.transform = "translateY(calc(100% + 10vh))";
+    alert.style.opacity = "0";
+  };
+
+  const showAlert = (text, color) => {
+    const alert = document.getElementById("alert");
+    alert.style.backgroundColor = color;
+    alert.childNodes[0].innerHTML = text;
+    alert.style.transform = "translateY(0%)";
+    alert.style.opacity = "1";
+    setTimeout(hideAlert, 1500);
+  };
+
   return (
     <DateContext.Provider value={date}>
-      <div>
-        {isFormOpen && (
-          <FormModal
-            formatDate={formatDate}
-            onCreate={handleCreate}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onCancel={() => setIsFormOpen(false)}
-            tableInfo={selectedTable}
-            formFlag={formFlag}
-          />
-        )}
-        <Header openForm={createTable} changeMode={setMode} isLoading={isLoading}></Header>
-        <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
-        <Infobar amounts={amounts}></Infobar>
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <div className="tablesContainer">
-            {tables.length === 0 && (
-              <h2 style={{ textAlign: "center", height: "0px", margin: "0px" }}>No hay mesas que pobreza</h2>
-            )}
-            {tables.map((table) => {
-              return (
-                <Table
-                  key={table.id}
-                  item={table}
-                  onEdit={() => editTable(table)}
-                  onDelete={() => deleteTable(table)}
-                />
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {isFormOpen && (
+        <FormModal
+          formatDate={formatDate}
+          onCreate={handleCreate}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onCancel={() => setIsFormOpen(false)}
+          tableInfo={selectedTable}
+          formFlag={formFlag}
+        />
+      )}
+      <Header openForm={createTable} changeMode={setMode} isLoading={isLoading}></Header>
+      <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
+      <Infobar amounts={amounts}></Infobar>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="tablesContainer">
+          {tables.length === 0 && (
+            <h2 style={{ textAlign: "center", height: "0px", margin: "0px" }}>No hay mesas que pobreza</h2>
+          )}
+          {tables.map((table) => {
+            return (
+              <Table
+                key={table.id}
+                item={table}
+                onEdit={() => editTable(table)}
+                onDelete={() => deleteTable(table)}
+              />
+            );
+          })}
+        </div>
+      )}
+      <Alert text={alert.text} background={alert.color} />
     </DateContext.Provider>
   );
 }

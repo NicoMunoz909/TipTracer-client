@@ -10,9 +10,7 @@ const Infobar = ({ amounts }) => {
       <TotalGraph amount={amounts.total} />
       <CardTipsGraph amount={amounts.cardTips} />
       <CashTipsGraph amount={amounts.cashTips} />
-      <BalanceGraph
-        amount={Math.trunc(amounts.cardTips - amounts.total * 0.05)}
-      />
+      <BalanceGraph amount={Math.trunc(amounts.cardTips - amounts.total * 0.05)} />
     </div>
   );
 };
