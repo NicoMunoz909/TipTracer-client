@@ -107,15 +107,13 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         showAlert(data.msg, "green");
+        fetchTables(UrlQuery);
         setIsFormOpen(false);
-        setTables([
-          ...tables,
-          { ...data.mesa, total: parseInt(data.mesa.total), propina: parseInt(data.mesa.propina) },
-        ]);
       })
       .catch((err) => {
         setIsLoading(false);
-        showAlert(err);
+        console.log(err);
+        showAlert(err, "red");
       });
   };
 
@@ -138,22 +136,8 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         showAlert(data.msg, "green");
+        fetchTables(UrlQuery);
         setIsFormOpen(false);
-        console.log({ id: data.id, ...formBody });
-        setTables(
-          tables.map((t) => {
-            if (t.id == data.id) {
-              return {
-                id: t.id,
-                ...formBody,
-                total: parseFloat(formBody.total),
-                propina: parseFloat(formBody.propina),
-              };
-            } else {
-              return t;
-            }
-          })
-        );
       })
       .catch((err) => {
         setIsLoading(false);
@@ -168,8 +152,8 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         showAlert(data.msg, "green");
+        fetchTables(UrlQuery);
         setIsFormOpen(false);
-        setTables(tables.filter((t) => t.id != data.id));
       })
       .catch((err) => {
         setIsLoading(false);
@@ -196,12 +180,12 @@ function App() {
 
   const hideAlert = () => {
     const alert = document.getElementById("alert");
-    alert.style.transform = "translateY(calc(100% + 10vh))";
-    alert.style.opacity = "0";
+    alert.removeAttribute("style");
   };
 
   const showAlert = (text, color) => {
     const alert = document.getElementById("alert");
+    alert.style.visibility = "visible";
     alert.style.backgroundColor = color;
     alert.childNodes[0].innerHTML = text;
     alert.style.transform = "translateY(0%)";
@@ -222,28 +206,32 @@ function App() {
           formFlag={formFlag}
         />
       )}
-      <Header openForm={createTable} changeMode={setMode} isLoading={isLoading}></Header>
-      <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
-      <Infobar amounts={amounts}></Infobar>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div className="tablesContainer">
-          {tables.length === 0 && (
-            <h2 style={{ textAlign: "center", height: "0px", margin: "0px" }}>No hay mesas que pobreza</h2>
-          )}
-          {tables.map((table) => {
-            return (
-              <Table
-                key={table.id}
-                item={table}
-                onEdit={() => editTable(table)}
-                onDelete={() => deleteTable(table)}
-              />
-            );
-          })}
+      <div className="appContainer">
+        <div className="infoContainer">
+          <Header openForm={createTable} changeMode={setMode} isLoading={isLoading}></Header>
+          <Datebar mode={mode} date={date} onChange={setDate}></Datebar>
+          <Infobar amounts={amounts}></Infobar>
         </div>
-      )}
+        <div className="tablesContainer">
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
+              {tables.length === 0 && <h2 style={{ textAlign: "center", margin: "0px" }}>No hay mesas</h2>}
+              {tables.map((table) => {
+                return (
+                  <Table
+                    key={table.id}
+                    item={table}
+                    onEdit={() => editTable(table)}
+                    onDelete={() => deleteTable(table)}
+                  />
+                );
+              })}
+            </>
+          )}
+        </div>
+      </div>
       <Alert text={alert.text} background={alert.color} />
     </DateContext.Provider>
   );
